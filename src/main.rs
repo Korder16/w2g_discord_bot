@@ -1,14 +1,12 @@
 mod w2g_api;
-use w2g_api::create_room;
-
 use std::env;
+use w2g_api::make_room;
 
 use serenity::async_trait;
-use serenity::prelude::*;
-use serenity::model::channel::Message;
 use serenity::framework::standard::macros::{command, group};
-use serenity::framework::standard::{StandardFramework, CommandResult};
-
+use serenity::framework::standard::{CommandResult, StandardFramework};
+use serenity::model::channel::Message;
+use serenity::prelude::*;
 
 #[group]
 #[commands(watch)]
@@ -39,13 +37,19 @@ async fn main() {
     }
 }
 
+fn get_video_url(msg: &Message) -> String {
+    let tokens: Vec<&str> = msg.content.split_whitespace().collect();
+    String::from(tokens.last().copied().unwrap())
+}
+
 #[command]
 async fn watch(ctx: &Context, msg: &Message) -> CommandResult {
-    let tokens: Vec<&str> = msg.content.split_whitespace().collect();
-    let video_url = tokens.last().copied().unwrap();
-    let room_url = create_room(video_url).await?;
-    println!("Created room: https://w2g.tv/rooms/{}", room_url);
-    msg.reply(ctx, format!("https://w2g.tv/rooms/{}", room_url)).await?;
+    let video_url: String = get_video_url(msg);
+
+    let room = make_room(video_url.as_str()).await?;
+
+    println!("Created room: {}", room.get_room_url());
+    msg.reply(ctx, room.get_room_url()).await?;
 
     Ok(())
 }
