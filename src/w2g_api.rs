@@ -28,7 +28,7 @@ impl W2GRoom {
     }
 
     pub async fn create_room(&mut self, video_url: &str) -> Result<(), reqwest::Error> {
-        let url = "https://w2g.tv/rooms/create.json";
+        let url = "https://api.w2g.tv/rooms/create.json";
         let request = make_request(video_url);
 
         let response = self
