@@ -1,6 +1,7 @@
 mod w2g_api;
 use std::env;
 use w2g_api::make_room;
+use dotenv::dotenv;
 
 use serenity::async_trait;
 use serenity::framework::standard::macros::{command, group};
@@ -19,6 +20,8 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("!"))
         .group(&GENERAL_GROUP);
