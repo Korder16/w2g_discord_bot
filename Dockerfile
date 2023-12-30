@@ -20,4 +20,5 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update -y
 RUN apt install -y libssl3 ca-certificates
 COPY --from=build /w2g_discord_bot/target/release/w2g_discord_bot .
+COPY --from=build /w2g_discord_bot/.env .
 CMD ["./w2g_discord_bot"]
