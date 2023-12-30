@@ -1,6 +1,6 @@
-mod w2g_api;
+mod w2g_api_client;
+use w2g_api_client::create_room;
 use std::env;
-use w2g_api::make_room;
 use dotenv::dotenv;
 
 use serenity::async_trait;
@@ -8,6 +8,9 @@ use serenity::framework::standard::macros::{command, group};
 use serenity::framework::standard::{CommandResult, StandardFramework};
 use serenity::model::channel::Message;
 use serenity::prelude::*;
+
+use log::warn;
+use simple_logger::SimpleLogger;
 
 #[group]
 #[commands(watch)]
@@ -20,6 +23,7 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    SimpleLogger::new().with_level(log::LevelFilter::Warn).init().unwrap();
     dotenv().ok();
 
     let framework = StandardFramework::new()
@@ -49,10 +53,11 @@ fn get_video_url(msg: &Message) -> String {
 async fn watch(ctx: &Context, msg: &Message) -> CommandResult {
     let video_url: String = get_video_url(msg);
 
-    let room = make_room(video_url.as_str()).await?;
+    let room = create_room(video_url.as_str()).await?;
 
-    println!("Created room: {}", room.get_room_url());
-    msg.reply(ctx, room.get_room_url()).await?;
+    let room_url = format!("https://w2g.tv/rooms/{}", room.streamkey);
+    warn!("Created room: {}", &room_url);
+    msg.reply(ctx, room_url).await?;
 
     Ok(())
 }
