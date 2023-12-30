@@ -5,6 +5,7 @@ WORKDIR /w2g_discord_bot
 
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
+COPY ./.env ./.env
 
 RUN cargo build --release
 RUN rm src/*.rs
